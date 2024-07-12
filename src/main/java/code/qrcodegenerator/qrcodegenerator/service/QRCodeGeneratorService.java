@@ -9,10 +9,14 @@ import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
 
 @Service
@@ -26,26 +30,29 @@ public class QRCodeGeneratorService {
     private static final String CHARSET = "UTF-8";
     private static final String strDateFormat = "yyyyMMddhhmmss";
 
-    public void generateQRCode(String message) throws IOException, WriterException {
-        String finalMessage = (StringUtils.isNotBlank(message)) ? qrCodeMessage : message;
-        processQRCode(finalMessage, prepareOutputFileName());
+    public String generateQRCode(String message) throws IOException, WriterException {
+        return processQRCode(message);
     }
 
-    private void processQRCode(String data, String path) throws WriterException,IOException {
-        BitMatrix matrix = new MultiFormatWriter()
+    private String processQRCode(String data) throws WriterException,IOException {
+        BitMatrix matrix = getBitMatrix(data);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        MatrixToImageWriter.writeToStream(matrix,"PNG",byteArrayOutputStream);
+        byte[] imageByte = byteArrayOutputStream.toByteArray();
+        return Base64.getEncoder().encodeToString(imageByte);
+    }
+
+    private static BitMatrix getBitMatrix(String data) throws WriterException, UnsupportedEncodingException {
+        return new MultiFormatWriter()
                 .encode(new String(data.getBytes(QRCodeGeneratorService.CHARSET),
                         QRCodeGeneratorService.CHARSET),
                         BarcodeFormat.QR_CODE, 400, 400);
-        MatrixToImageWriter.writeToFile(matrix,
-                path.substring(path.lastIndexOf('.') + 1),new File(path));
     }
 
-    private String prepareOutputFileName() {
-        Date date = new Date();
-
-        DateFormat dateFormat = new SimpleDateFormat(strDateFormat);
-        String formattedDate = dateFormat.format(date);
-
-        return outputLocation + "\\" + formattedDate + ".png";
-    }
+//    private String prepareOutputFileName() {
+//        Date date = new Date();
+//        DateFormat dateFormat = new SimpleDateFormat(strDateFormat);
+//        String formattedDate = dateFormat.format(date);
+//        return outputLocation + "\\" + formattedDate + ".png";
+//    }
 }
