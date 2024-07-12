@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 @RestController
 @Slf4j
-@CrossOrigin("http://localhost:4200")
+@CrossOrigin("https://qr-angular-one.vercel.app")
 public class QRCodeController {
 
     @Autowired
