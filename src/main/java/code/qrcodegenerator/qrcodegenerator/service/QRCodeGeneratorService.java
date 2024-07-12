@@ -22,13 +22,13 @@ import java.util.Date;
 @Service
 public class QRCodeGeneratorService {
 
-    @Value("${qrcode.output.directory}")
-    private String outputLocation;
-    @Value("${qrcode.message}")
-    private String qrCodeMessage;
+//    @Value("${qrcode.output.directory}")
+//    private String outputLocation;
+//    @Value("${qrcode.message}")
+//    private String qrCodeMessage;
 
     private static final String CHARSET = "UTF-8";
-    private static final String strDateFormat = "yyyyMMddhhmmss";
+//    private static final String strDateFormat = "yyyyMMddhhmmss";
 
     public String generateQRCode(String message) throws IOException, WriterException {
         return processQRCode(message);
